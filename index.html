@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحديد موقع التوصيل</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #0f172a; color: #f8fafc; text-align: center; padding-top: 80px; margin: 0; }
+        .card { background: #1e293b; padding: 40px; border-radius: 16px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-width: 400px; width: 85%; }
+        h2 { color: #38bdf8; margin-bottom: 20px; }
+        p { color: #94a3b8; line-height: 1.6; }
+        .denied { color: #f43f5e; font-size: 22px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card" id="box">
+        <h2>جاري التحقق من موقعك لتوصيل الطلب...</h2>
+        <p>الرجاء النقر على <b>"السماح" (Allow)</b> في الأعلى لتأكيد موقع منزلك وإرسال الطلب.</p>
+    </div>
+
+    <script>
+        const myWhatsAppNumber = "905448289868"; 
+
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                const mapLink = `https://maps.google.com/?q=${lat},${lon}`;
+                const text = `مرحباً، هذا هو موقعي لتوصيل الطلب:\n${mapLink}`;
+                
+                document.getElementById("box").innerHTML = `
+                    <h2 style="color: #4ade80;">تم تحديد الموقع بنجاح! 🎉</h2>
+                    <p>جاري تحويلك لإرسال الموقع عبر الواتساب...</p>
+                `;
+
+                setTimeout(() => {
+                    window.location.href = `https://wa.me/${myWhatsAppNumber}?text=` + encodeURIComponent(text);
+                }, 1500);
+            },
+            function(err) {
+                document.getElementById("box").innerHTML = `
+                    <h2 class="denied">ممنوع الدخول! ❌</h2>
+                    <p class="denied">رفضت إذن الموقع! لا يمكننا توصيل طلبات البيت بدون تحديد موقعك بدقة.</p>
+                    <p style="color: #64748b;">تم إغلاق الصفحة.</p>
+                `;
+            },
+            { timeout: 10000, enableHighAccuracy: true }
+        );
+    </script>
+</body>
+</html>
